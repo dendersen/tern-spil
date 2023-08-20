@@ -12,4 +12,7 @@ public class Point {
   public int getX() {
     return x;
   }
+  public Point add(int x, int y) {
+    return new Point(this.x + x, this.y + y);
+  }
 }

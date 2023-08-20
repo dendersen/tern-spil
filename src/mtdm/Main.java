@@ -3,43 +3,56 @@ package mtdm;
 import processing.core.PApplet;
 
 public class Main extends PApplet{
-  User[] users;
-  int userID = 0;
-  Board table;
-  int pixelSize;
+  PlayerThread GUI;
+  final private int pixelSize = 100;
+  final private int width = 10;
+  final private int height = 10;
+  final private int userCount = 5;
+
+  public int getPixelSize() {
+    return pixelSize;
+  }
   public static boolean mouseClick = false;
   public static void main(String[] args) {
-    Main sketch = new Main(2, 10, 10,100);
+    Main sketch = new Main();
     PApplet.runSketch(new String[] {"Main"},sketch);
-  }
-  public Main(int userCount, int width, int height, int pixelSize){
-    table = new Board(width, height);
-    users = new User[userCount];
-    for (int i = 0; i < users.length; i++) {
-      users[i] = new User(i);
-    }
-    this.pixelSize = pixelSize;
   }
   @Override
   public void settings(){
-    size(pixelSize + table.getWidth()*pixelSize, pixelSize + table.getHeigth()*pixelSize);
+    GUI = new PlayerThread();
+    GUI.start(this, userCount, width, height, pixelSize);
+    size(pixelSize + width*pixelSize, pixelSize + height*pixelSize);
   }
   @Override
   public  void setup(){
-    table.draw(getGraphics(),pixelSize);
+    GUI.draw(getGraphics(),pixelSize);
+    g.fill(0);
+    g.stroke(0);
   }
   @Override
   public void draw(){
-    table.draw(getGraphics(),pixelSize);
-    users[userID%users.length].turn(table, this, pixelSize);
-    System.out.println("understood");
+    HID.update(this);
+    GUI.draw(getGraphics(),pixelSize);
+    System.out.print("        \r");
   }
   @Override
   public void mousePressed(){
-    mouseClick = true;
+    if(HID.locked) return;
+    if(mouseButton == RIGHT){
+      HID.mouseClickRigth = true;
+    }else{
+      HID.mouseClickLeft = true;
+    }
+    System.out.print(mouseButton);
   }
   @Override
   public void mouseReleased(){
-    mouseClick = false;
+    HID.locked = false;
+    if(mouseButton == RIGHT){
+      HID.mouseClickRigth = false;
+    }else{
+      HID.mouseClickLeft = false;
+    }
+    System.out.print(mouseButton);
   }
 }

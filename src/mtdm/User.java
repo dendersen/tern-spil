@@ -1,44 +1,45 @@
 package mtdm;
 
-import processing.core.PApplet;
-import processing.core.PGraphics;
-
 public class User {
   int ID;
   public User(int ID){
     this.ID  = ID;
   }
-  public void turn(Board table, PApplet p, int pixelSize){
-    Point location = pickSquare(p, pixelSize);
-    Direction side = pickSide(p);
-    table.placeLine(location, side, this);
-  }
-  private Point pickSquare(PApplet p, int pixelSize){
-    System.out.println("pick location\r");
-    Main.mouseClick = false;
-    while(Main.mouseClick);
-    int x = p.mouseX;
-    int y = p.mouseY;
-    return new Point(x/pixelSize, y/pixelSize);
-  }
-  private Direction pickSide(PApplet p) {
+  public void turn(Board table, int pixelSize){
     while(true){
-      System.out.println((p.key == PApplet.CODED) + " " + (p.keyCode) + "   \r");
-      switch(p.keyCode){
-      case PApplet.UP:
-        return Direction.top;
-      case PApplet.DOWN:
-        return Direction.bottom;
-      case PApplet.LEFT:
-        return Direction.left;
-      case PApplet.RIGHT:
-        return Direction.rigth;
+      if(HID.mouseClickLeft){
+        HID.mouseClickLeft = false;
+        HID.locked = true;
+        Direction side;
+        Point location = new Point((HID.mouseX-pixelSize/2)/pixelSize, (HID.mouseY-pixelSize/2)/pixelSize);
+        while(true){
+          side = Direction.values()[HID.Arrow(false, null).ordinal()];
+          if(side != Direction.none) {
+            break;
+          }
+          if(HID.mouseClickLeft){
+            Point temp = new Point((HID.mouseX-pixelSize/2)/pixelSize, (HID.mouseY-pixelSize/2)/pixelSize);
+            if(
+              temp.getX() < table.getWidth() && 
+              temp.getY() < table.getHeigth() &&
+              temp.getX() >= 0 && 
+              temp.getY() >= 0
+            )
+            location = temp;
+          }
+          table.setActive(location);
+        }
+        if(!table.placeLine(location, side, this)){
+          break;
+        }
+      }else{
+        try {
+          Thread.sleep(20);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
-      try {
-        Thread.sleep(3);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      table.setActive(null);
     }
   }
 }

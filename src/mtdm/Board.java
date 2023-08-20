@@ -5,9 +5,11 @@ import processing.core.PGraphics;
 public class Board {
   private boolean[][] vertical,horizontal;
   private User[][] closed;
+  private Point active;
   public Board(int width, int height){
     vertical = new boolean[width+1][height];
     horizontal = new boolean[width][height+1];
+    closed = new User[width][height];
   }
   public boolean placeLine(Point square, Direction side, User user){
     int i,j;
@@ -16,16 +18,30 @@ public class Board {
       case bottom:
         i = square.getX();
         j = square.getY() + (side == Direction.top ? 0 : 1);
-        horizontal[i][j] = true;
+        if(!horizontal[i][j]){
+          horizontal[i][j] = true;
+          return assign(square, user);
+        }
         break;
       case rigth:
       case left:
         j = square.getY();
         i = square.getX() + (side == Direction.left ? 0 : 1);
-        vertical[i][j] = true;
+        if(!vertical[i][j]){
+          vertical[i][j] = true;
+          return 
+          assign(square, user) ||
+          assign(square.add(1,0), user) ||
+          assign(square.add(0,1), user) ||
+          assign(square.add(-1,0), user) ||
+          assign(square.add(0,-1), user);
+        }
+        break;
+      default:
         break;
     }
-    return assign(square, user);
+    System.out.println("\rhis line is already chosen");
+    return true;
   }
   private boolean assign(Point square, User user) {
     if(
@@ -44,13 +60,17 @@ public class Board {
     vertical[square.getX()][square.getY()] && 
     vertical[square.getX()+1][square.getY()];
   }
-  public void draw(PGraphics g, int pixelSize){
+  public void draw(PGraphics g, int pixelSize, int userID){
+    g.background(220);
+    g.strokeWeight(1);
+    g.fill(0);
+    g.text(userID,pixelSize/4,pixelSize/4);
     for (int x = 0; x < vertical.length; x++) {
       for (int y = 0; y < vertical[x].length; y++) {
         if(vertical[x][y]){
-          g.strokeWeight(1);
+          g.strokeWeight(4);
         }else{
-          g.strokeWeight(2);
+          g.strokeWeight(1);
         }
         g.line((pixelSize / 2) + (x * pixelSize), (pixelSize / 2) + (y * pixelSize), (pixelSize / 2) + (x * pixelSize), (pixelSize / 2) + ((y + 1) * pixelSize));
       }
@@ -58,13 +78,32 @@ public class Board {
     for (int x = 0; x < horizontal.length; x++) {
       for (int y = 0; y < horizontal[x].length; y++) {
         if(horizontal[x][y]){
-          g.strokeWeight(1);
+          g.strokeWeight(4);
         }else{
-          g.strokeWeight(2);
+          g.strokeWeight(1);
         }
         g.line((pixelSize / 2) + (x * pixelSize), (pixelSize / 2) + (y * pixelSize), (pixelSize / 2) + ((x + 1) * pixelSize), (pixelSize / 2) + (y * pixelSize));
       }
     }
+    for (int x = 0; x < closed.length; x++) {
+      for (int y = 0; y < closed[x].length; y++) {
+        if(closed[x][y] != null){
+          g.text(closed[x][y].ID, x * pixelSize + pixelSize, y * pixelSize + pixelSize);
+        }
+      }
+    }
+    if(active != null){
+      g.fill(255, 0, 0);
+      g.strokeWeight(0);
+      g.square(
+        active.getX() * pixelSize + pixelSize * 0.6f, 
+        active.getY() * pixelSize + pixelSize * 0.6f, 
+        pixelSize / 10 * 8
+      );
+    }
+  }
+  public void setActive(Point square){
+    active = square;
   }
   public int getWidth(){
     return horizontal.length;
