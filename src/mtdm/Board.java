@@ -40,7 +40,7 @@ public class Board {
       default:
         break;
     }
-    System.out.println("\rhis line is already chosen");
+    System.out.println("his line is already chosen");
     return true;
   }
   private boolean assign(Point square, User user) {

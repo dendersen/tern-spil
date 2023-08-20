@@ -37,6 +37,5 @@ public class HID {
     }else{
       Arrow(true, Direction.none);
     }
-    System.out.print(arrow);
   }
 }

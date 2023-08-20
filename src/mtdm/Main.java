@@ -33,7 +33,6 @@ public class Main extends PApplet{
   public void draw(){
     HID.update(this);
     GUI.draw(getGraphics(),pixelSize);
-    System.out.print("        \r");
   }
   @Override
   public void mousePressed(){
@@ -43,7 +42,6 @@ public class Main extends PApplet{
     }else{
       HID.mouseClickLeft = true;
     }
-    System.out.print(mouseButton);
   }
   @Override
   public void mouseReleased(){
@@ -53,6 +51,5 @@ public class Main extends PApplet{
     }else{
       HID.mouseClickLeft = false;
     }
-    System.out.print(mouseButton);
   }
 }

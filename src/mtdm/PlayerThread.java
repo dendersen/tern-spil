@@ -20,7 +20,7 @@ public class PlayerThread extends Thread{
   public void run(){
     while(true){
       users[userID%users.length].turn(table, main.getPixelSize());
-      System.out.println("\nunderstood\n");
+      System.out.println("understood");
       userID++;
     }
   }
